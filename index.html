@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keuangan Pribadi</title>
+
+<style>
+:root {
+    --bg: #030712;
+    --panel: #081426;
+    --blue: #087cff;
+    --border: #123e70;
+    --text: #e5efff;
+    --muted: #8da8cc;
+    --green: #00dfa2;
+    --red: #ff4268;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    padding: 18px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.auth-wrapper {
+    min-height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 30px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: 0 0 35px #087cff12;
+}
+
+.logo {
+    text-align: center;
+    font-size: 45px;
+    margin-bottom: 15px;
+}
+
+h1, h2 {
+    margin-bottom: 15px;
+}
+
+.auth-card h1 {
+    text-align: center;
+    font-size: 26px;
+}
+
+.subtitle {
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #c8dcff;
+}
+
+input, select {
+    width: 100%;
+    padding: 13px;
+    margin-bottom: 16px;
+    border: 1px solid #14539a;
+    border-radius: 9px;
+    background: #061326;
+    color: white;
+    outline: none;
+    font-size: 14px;
+}
+
+input:focus, select:focus {
+    border-color: var(--blue);
+}
+
+input::placeholder {
+    color: #7395c2;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 9px;
+    padding: 12px 15px;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.primary {
+    width: 100%;
+    background: var(--blue);
+    color: white;
+    font-weight: bold;
+}
+
+.primary:hover {
+    background: #0055cc;
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 22px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.auth-switch button {
+    color: #65aaff;
+    background: transparent;
+    padding: 0;
+}
+
+.message {
+    color: var(--red);
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+header {
+    background: linear-gradient(120deg, #063c91, #06152b);
+    border: 1px solid var(--blue);
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+.header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+header h1 {
+    margin-bottom: 8px;
+}
+
+header p {
+    color: #c3dcff;
+    line-height: 1.6;
+}
+
+.logout {
+    background: #301020;
+    color: #ff6683;
+    border: 1px solid #b3264c;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--blue);
+    padding: 22px;
+    border-radius: 13px;
+    min-width: 0;
+}
+
+.card.pemasukan {
+    border-left-color: var(--green);
+}
+
+.card.pengeluaran {
+    border-left-color: var(--red);
+}
+
+.card p {
+    color: var(--muted);
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.card h2 {
+    font-size: clamp(18px, 2.5vw, 25px);
+    overflow-wrap: anywhere;
+    margin-bottom: 0;
+}
+
+.content {
+    display: grid;
+    grid-template-columns: 330px minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 22px;
+    border-radius: 15px;
+    min-width: 0;
+}
+
+.panel h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.add-btn {
+    width: 100%;
+    background: var(--blue);
+    color: white;
+    font-weight: bold;
+}
+
+.filter {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.filter input, .filter select {
+    margin-bottom: 0;
+    min-width: 0;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+}
+
+table {
+    width: 100%;
+    min-width: 530px;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 13px 10px;
+    text-align: left;
+    font-size: 13px;
+    border-bottom: 1px solid #102d50;
+}
+
+th {
+    background: #10294b;
+    color: #b9d6ff;
+}
+
+tbody tr:hover {
+    background: #0d2039;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.badge {
+    display: inline-block;
+    padding: 5px 8px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-top: 6px;
+}
+
+.badge-masuk {
+    color: var(--green);
+    background: #003a30;
+}
+
+.badge-keluar {
+    color: var(--red);
+    background: #3c1020;
+}
+
+.nominal-masuk {
+    color: var(--green);
+    font-weight: bold;
+}
+
+.nominal-keluar {
+    color: var(--red);
+    font-weight: bold;
+}
+
+.kategori {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.delete-btn {
+    background: #301020;
+    color: #ff6683;
+    border: 1px solid #b3264c;
+    padding: 8px 10px;
+}
+
+.reset-btn {
+    margin-top: 15px;
+    background: #10294b;
+    color: #a9ceff;
+    border: 1px solid #20538c;
+}
+
+.empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 25px;
+}
+
+footer {
+    text-align: center;
+    color: #7395c2;
+    font-size: 13px;
+    margin-top: 25px;
+    padding: 15px;
+    border-top: 1px solid #102d50;
+}
+
+@media (max-width: 850px) {
+    .content {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    header, .panel {
+        padding: 17px;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .filter {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-card {
+        padding: 23px;
+    }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<!-- LOGIN -->
+<section id="loginPage" class="auth-wrapper">
+    <div class="auth-card">
+        <div class="logo">💳</div>
+        <h1>Selamat Datang</h1>
+        <p class="subtitle">Login untuk mengelola keuangan pribadimu.</p>
+
+        <form id="loginForm">
+            <label for="loginUser">Username</label>
+            <input id="loginUser" autocomplete="username"
+                maxlength="30" required placeholder="Masukkan username">
+
+            <label for="loginPass">Password</label>
+            <input id="loginPass" type="password"
+                autocomplete="current-password"
+                required placeholder="Masukkan password">
+
+            <p id="loginMessage" class="message" role="alert"></p>
+            <button class="primary" type="submit">Login</button>
+        </form>
+
+        <div class="auth-switch">
+            Belum punya akun?
+            <button type="button" onclick="showPage('registerPage')">
+                Daftar sekarang
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- REGISTRASI -->
+<section id="registerPage" class="auth-wrapper hidden">
+    <div class="auth-card">
+        <div class="logo">👤</div>
+        <h1>Buat Akun</h1>
+        <p class="subtitle">Daftar untuk mulai mencatat keuanganmu.</p>
+
+        <form id="registerForm">
+            <label for="registerUser">Username</label>
+            <input id="registerUser" minlength="3" maxlength="30"
+                pattern="[A-Za-z0-9_]+" autocomplete="username"
+                required placeholder="3-30 karakter">
+
+            <label for="registerPass">Password</label>
+            <input id="registerPass" type="password" minlength="8"
+                autocomplete="new-password" required
+                placeholder="Minimal 8 karakter">
+
+            <label for="confirmPass">Konfirmasi Password</label>
+            <input id="confirmPass" type="password" minlength="8"
+                autocomplete="new-password" required
+                placeholder="Ulangi password">
+
+            <p id="registerMessage" class="message" role="alert"></p>
+            <button class="primary" type="submit">Daftar Sekarang</button>
+        </form>
+
+        <div class="auth-switch">
+            Sudah punya akun?
+            <button type="button" onclick="showPage('loginPage')">
+                Login
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- DASHBOARD KEUANGAN -->
+<section id="dashboardPage" class="hidden">
+
+<header>
+    <div class="header-row">
+        <div>
+            <h1>💳 Keuangan Pribadi</h1>
+            <p>Halo, <strong id="welcomeUser"></strong>!</p>
+            <p>Kelola pemasukan dan pengeluaran uangmu.</p>
+        </div>
+        <button id="logoutBtn" class="logout" type="button">
+            Logout
+        </button>
+    </div>
+</header>
+
+<section class="cards">
+    <div class="card">
+        <p>💳 Total Saldo</p>
+        <h2 id="totalSaldo">Rp0</h2>
+    </div>
+
+    <div class="card pemasukan">
+        <p>📈 Total Pemasukan</p>
+        <h2 id="totalPemasukan">Rp0</h2>
+    </div>
+
+    <div class="card pengeluaran">
+        <p>📉 Total Pengeluaran</p>
+        <h2 id="totalPengeluaran">Rp0</h2>
+    </div>
+</section>
+
+<section class="content">
+    <div class="panel">
+        <h2>＋ Tambah Transaksi</h2>
+
+        <form id="transactionForm">
+            <label for="jenis">Jenis Transaksi</label>
+            <select id="jenis" required>
+                <option value="pemasukan">Pemasukan</option>
+                <option value="pengeluaran">Pengeluaran</option>
+            </select>
+
+            <label for="keterangan">Keterangan</label>
+            <input id="keterangan" maxlength="100" required
+                placeholder="Contoh: Uang jajan">
+
+            <label for="kategori">Kategori</label>
+            <select id="kategori" required>
+                <option>Uang Jajan</option>
+                <option>Gaji</option>
+                <option>Tabungan</option>
+                <option>Makanan</option>
+                <option>Transportasi</option>
+                <option>Belanja</option>
+                <option>Pendidikan</option>
+                <option>Hiburan</option>
+                <option>Lainnya</option>
+            </select>
+
+            <label for="nominal">Nominal (Rp)</label>
+            <input id="nominal" type="number" min="1"
+                step="1" required placeholder="Contoh: 50000">
+
+            <label for="tanggal">Tanggal</label>
+            <input id="tanggal" type="date" required>
+
+            <button class="add-btn" type="submit">
+                ＋ Tambah Transaksi
+            </button>
+        </form>
+    </div>
+
+    <div class="panel">
+        <h2>◷ Riwayat Transaksi</h2>
+
+        <div class="filter">
+            <select id="filterJenis">
+                <option value="semua">Semua Transaksi</option>
+                <option value="pemasukan">Pemasukan</option>
+                <option value="pengeluaran">Pengeluaran</option>
+            </select>
+
+            <input id="cari" type="search"
+                placeholder="Cari transaksi...">
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Keterangan</th>
+                        <th>Nominal</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="daftarTransaksi"></tbody>
+            </table>
+        </div>
+
+        <button id="hapusSemua" class="reset-btn" type="button">
+            Hapus Semua Data
+        </button>
+    </div>
+</section>
+
+<footer>Keuangan Pribadi © 2026 | Catatan Keuangan Pribadi</footer>
+</section>
+
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+const USERS_KEY = "kp_demo_users_v1";
+const SESSION_KEY = "kp_demo_session_v1";
+const DATA_KEY = "kp_demo_transactions_v1";
+
+let currentUser = null;
+let transaksi = [];
+
+function showPage(pageId) {
+    ["loginPage", "registerPage", "dashboardPage"].forEach(id => {
+        $(id).classList.toggle("hidden", id !== pageId);
+    });
+
+    $("loginMessage").textContent = "";
+    $("registerMessage").textContent = "";
+}
+
+function getUsers() {
+    try {
+        const users = JSON.parse(localStorage.getItem(USERS_KEY) || "{}");
+        return users && typeof users === "object" && !Array.isArray(users)
+            ? users : {};
+    } catch {
+        return {};
+    }
+}
+
+async function hashPassword(password) {
+    if (!crypto.subtle || !crypto.subtle.digest) {
+        throw new Error("Buka melalui browser modern atau localhost.");
+    }
+
+    const data = new TextEncoder().encode(password);
+    const hash = await crypto.subtle.digest("SHA-256", data);
+
+    return Array.from(new Uint8Array(hash))
+        .map(byte => byte.toString(16).padStart(2, "0"))
+        .join("");
+}
+
+function dataKey() {
+    return DATA_KEY + "_" + currentUser;
+}
+
+function loadTransactions() {
+    try {
+        const data = JSON.parse(localStorage.getItem(dataKey()) || "[]");
+
+        transaksi = Array.isArray(data) ? data.filter(item =>
+            item &&
+            typeof item.id === "string" &&
+            ["pemasukan", "pengeluaran"].includes(item.jenis) &&
+            typeof item.keterangan === "string" &&
+            typeof item.kategori === "string" &&
+            Number.isSafeInteger(item.nominal) &&
+            item.nominal > 0 &&
+            typeof item.tanggal === "string"
+        ) : [];
+    } catch {
+        transaksi = [];
+    }
+}
+
+function saveTransactions() {
+    try {
+        localStorage.setItem(dataKey(), JSON.stringify(transaksi));
+        return true;
+    } catch {
+        alert("Data gagal disimpan. Periksa penyimpanan browser.");
+        return false;
+    }
+}
+
+function tanggalHariIni() {
+    const now = new Date();
+    return new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+        .toISOString().slice(0, 10);
+}
+
+function rupiah(value) {
+    return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0
+    }).format(value);
+}
+
+function sel(teks) {
+    const td = document.createElement("td");
+    td.textContent = teks;
+    return td;
+}
+
+function render() {
+    const masuk = transaksi
+        .filter(t => t.jenis === "pemasukan")
+        .reduce((sum, t) => sum + t.nominal, 0);
+
+    const keluar = transaksi
+        .filter(t => t.jenis === "pengeluaran")
+        .reduce((sum, t) => sum + t.nominal, 0);
+
+    $("totalSaldo").textContent = rupiah(masuk - keluar);
+    $("totalPemasukan").textContent = rupiah(masuk);
+    $("totalPengeluaran").textContent = rupiah(keluar);
+
+    const keyword = $("cari").value.toLowerCase().trim();
+
+    const hasil = transaksi
+        .filter(t => $("filterJenis").value === "semua" ||
+            t.jenis === $("filterJenis").value)
+        .filter(t => t.keterangan.toLowerCase().includes(keyword) ||
+            t.kategori.toLowerCase().includes(keyword))
+        .sort((a, b) => b.tanggal.localeCompare(a.tanggal));
+
+    const tbody = $("daftarTransaksi");
+    tbody.replaceChildren();
+
+    if (!hasil.length) {
+        const tr = document.createElement("tr");
+        const td = sel("Belum ada transaksi.");
+        td.colSpan = 4;
+        td.className = "empty";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        return;
+    }
+
+    hasil.forEach(item => {
+        const tr = document.createElement("tr");
+
+        const parts = item.tanggal.split("-");
+        tr.appendChild(sel(parts.length === 3
+            ? `${parts[2]}/${parts[1]}/${parts[0]}`
+            : item.tanggal));
+
+        const detail = document.createElement("td");
+        const name = document.createElement("strong");
+        name.textContent = item.keterangan;
+
+        const category = document.createElement("div");
+        category.className = "kategori";
+        category.textContent = item.kategori;
+
+        const badge = document.createElement("span");
+        badge.className = "badge " +
+            (item.jenis === "pemasukan" ? "badge-masuk" : "badge-keluar");
+        badge.textContent = item.jenis === "pemasukan" ? "Masuk" : "Keluar";
+
+        detail.append(name, category, badge);
+        tr.appendChild(detail);
+
+        const amount = sel(
+            (item.jenis === "pemasukan" ? "+ " : "- ") +
+            rupiah(item.nominal)
+        );
+
+        amount.className = item.jenis === "pemasukan"
+            ? "nominal-masuk" : "nominal-keluar";
+
+        tr.appendChild(amount);
+
+        const action = document.createElement("td");
+        const button = document.createElement("button");
+        button.className = "delete-btn";
+        button.textContent = "Hapus";
+
+        button.addEventListener("click", () => {
+            if (confirm("Hapus transaksi ini?")) {
+                transaksi = transaksi.filter(t => t.id !== item.id);
+                if (saveTransactions()) render();
+            }
+        });
+
+        action.appendChild(button);
+        tr.appendChild(action);
+        tbody.appendChild(tr);
+    });
+}
+
+function enterDashboard(username) {
+    currentUser = username;
+    loadTransactions();
+    $("welcomeUser").textContent = username;
+    $("tanggal").value = tanggalHariIni();
+    $("transactionForm").reset();
+    $("tanggal").value = tanggalHariIni();
+    render();
+    showPage("dashboardPage");
+}
+
+$("registerForm").addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const username = $("registerUser").value.trim().toLowerCase();
+    const password = $("registerPass").value;
+    const confirmPassword = $("confirmPass").value;
+    const message = $("registerMessage");
+
+    message.textContent = "";
+
+    if (!/^[a-z0-9_]{3,30}$/.test(username)) {
+        message.textContent =
+            "Username harus 3-30 karakter, menggunakan huruf, angka, atau _.";
+        return;
+    }
+
+    if (password.length < 8) {
+        message.textContent = "Password minimal 8 karakter.";
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        message.textContent = "Konfirmasi password tidak cocok.";
+        return;
+    }
+
+    const users = getUsers();
+
+    if (users[username]) {
+        message.textContent = "Username sudah digunakan.";
+        return;
+    }
+
+    try {
+        const passwordHash = await hashPassword(password);
+        users[username] = { passwordHash };
+
+        localStorage.setItem(USERS_KEY, JSON.stringify(users));
+
+        alert("Registrasi berhasil. Silakan login.");
+        $("registerForm").reset();
+        showPage("loginPage");
+        $("loginUser").value = username;
+    } catch (error) {
+        message.textContent = error.message ||
+            "Registrasi gagal. Coba lagi.";
+    }
+});
+
+$("loginForm").addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const username = $("loginUser").value.trim().toLowerCase();
+    const password = $("loginPass").value;
+    const message = $("loginMessage");
+
+    message.textContent = "";
+
+    const users = getUsers();
+
+    if (!users[username]) {
+        message.textContent = "Username atau password salah.";
+        return;
+    }
+
+    try {
+        const passwordHash = await hashPassword(password);
+
+        if (passwordHash !== users[username].passwordHash) {
+            message.textContent = "Username atau password salah.";
+            return;
+        }
+
+        currentUser = username;
+        sessionStorage.setItem(SESSION_KEY, username);
+        enterDashboard(username);
+    } catch (error) {
+        message.textContent = error.message || "Login gagal.";
+    }
+});
+
+$("transactionForm").addEventListener("submit", event => {
+    event.preventDefault();
+
+    if (!currentUser) return;
+
+    const nominal = Number($("nominal").value);
+    const keterangan = $("keterangan").value.trim();
+    const tanggal = $("tanggal").value;
+
+    if (!keterangan || !tanggal) {
+        alert("Lengkapi semua data transaksi.");
+        return;
+    }
+
+    if (!Number.isSafeInteger(nominal) || nominal <= 0) {
+        alert("Nominal harus berupa bilangan bulat positif.");
+        return;
+    }
+
+    if (transaksi.length >= 10000) {
+        alert("Batas jumlah transaksi tercapai.");
+        return;
+    }
+
+    transaksi.push({
+        id: crypto.randomUUID
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random()}`,
+        jenis: $("jenis").value,
+        keterangan,
+        kategori: $("kategori").value,
+        nominal,
+        tanggal
+    });
+
+    if (saveTransactions()) {
+        render();
+        $("transactionForm").reset();
+        $("tanggal").value = tanggalHariIni();
+    } else {
+        transaksi.pop();
+    }
+});
+
+$("filterJenis").addEventListener("change", render);
+$("cari").addEventListener("input", render);
+
+$("hapusSemua").addEventListener("click", () => {
+    if (!transaksi.length) {
+        alert("Belum ada data untuk dihapus.");
+        return;
+    }
+
+    if (confirm("Hapus semua transaksi akun ini?")) {
+        const sebelumnya = transaksi;
+        transaksi = [];
+
+        if (saveTransactions()) {
+            render();
+        } else {
+            transaksi = sebelumnya;
+        }
+    }
+});
+
+$("logoutBtn").addEventListener("click", () => {
+    sessionStorage.removeItem(SESSION_KEY);
+    currentUser = null;
+    transaksi = [];
+    $("loginForm").reset();
+    showPage("loginPage");
+});
+
+const savedSession = sessionStorage.getItem(SESSION_KEY);
+const savedUsers = getUsers();
+
+if (savedSession && savedUsers[savedSession]) {
+    enterDashboard(savedSession);
+} else {
+    sessionStorage.removeItem(SESSION_KEY);
+    showPage("loginPage");
+}
+</script>
+</body>
+</html>
